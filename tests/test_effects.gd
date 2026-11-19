@@ -29,6 +29,9 @@ func _card(cid: String, effects: Array) -> Dictionary:
 	return {"id": cid, "name": cid, "cost": 1, "text": "测试卡", "effects": effects}
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var effects: GDScript = load(EFFECTS_PATH)
@@ -190,3 +193,4 @@ func run(failures: Array[String]) -> void:
 	effects.resolve(st9, combo9, "player", lg9)
 	h.assert_true(st9 == st9_copy, "纯函数：原 state 不被改动", failures)
 	h.assert_true(lg9 == lg9_copy, "纯函数：原 ledger 不被改动", failures)
+	completed = true

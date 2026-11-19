@@ -5,6 +5,9 @@ const HARNESS_PATH := "res://tests/harness.gd"
 const RNG_PATH := "res://scripts/core/rng.gd"
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var rng_s: GDScript = load(RNG_PATH)
@@ -36,6 +39,7 @@ func run(failures: Array[String]) -> void:
 	var sorted_once := once.duplicate()
 	sorted_once.sort()
 	h.assert_eq(sorted_once, base, "shuffle 是重排不是改值", failures)
+	completed = true
 
 
 static func a_seq_needs(seq: Array, other, bound: int) -> bool:

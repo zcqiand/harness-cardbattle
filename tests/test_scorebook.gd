@@ -44,6 +44,9 @@ class MemStorage:
 		return store.has(path)
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var scorebook: GDScript = load(SCOREBOOK_PATH)
@@ -69,6 +72,7 @@ func run(failures: Array[String]) -> void:
 	_test_recent_edge(h, scorebook, failures)
 	_test_recent_pure(h, scorebook, failures)
 	_test_file_storage(h, storage_impl, failures)
+	completed = true
 
 
 func _test_save_path(h: GDScript, scorebook: GDScript, failures: Array[String]) -> void:

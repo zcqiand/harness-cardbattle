@@ -13,6 +13,9 @@ const LEGAL_EVENTS := {
 }
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var tm: GDScript = load(TM_PATH)
@@ -42,3 +45,4 @@ func run(failures: Array[String]) -> void:
 		h.assert_true(not go["ok"], "GAME_OVER 拒绝 %s" % ev, failures)
 		h.assert_eq(go["reason"], "GAME_OVER 不接受事件 %s" % ev,
 			"GAME_OVER 拒绝 %s reason 逐字" % ev, failures)
+	completed = true

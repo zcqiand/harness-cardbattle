@@ -14,6 +14,9 @@ const SCRIPT_PATHS: Array[String] = [
 ]
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var harness: GDScript = load(HARNESS_PATH)
 	for path in SCRIPT_PATHS:
@@ -28,3 +31,4 @@ func run(failures: Array[String]) -> void:
 		harness.assert_true(node != null, "main.tscn 可实例化", failures)
 		if node != null:
 			node.free()
+	completed = true

@@ -5,6 +5,9 @@ const HARNESS_PATH := "res://tests/harness.gd"
 const CARDS_PATH := "res://scripts/core/cards.gd"
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var cards: GDScript = load(CARDS_PATH)
@@ -48,3 +51,4 @@ func run(failures: Array[String]) -> void:
 		h.assert_eq(ids.size(), 20, "%s 恰 20 张" % deck_path, failures)
 		for cid in ids:
 			h.assert_true(loaded["table"].has(cid), "%s 引用未知卡 %s" % [deck_path, cid], failures)
+	completed = true

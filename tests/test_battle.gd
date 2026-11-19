@@ -15,6 +15,9 @@ func _load_deck(path: String) -> Array:
 	return data["cards"]
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var battle: GDScript = load(BATTLE_PATH)
@@ -289,3 +292,4 @@ func run(failures: Array[String]) -> void:
 	battle.apply_action(gt, {"type": "end_turn"})
 	h.assert_eq(battle.turn_count(gt), 3, "再 end_turn turn_count=3", failures)
 	h.assert_eq(stt["active"], "player", "切回 player", failures)
+	completed = true

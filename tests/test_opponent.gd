@@ -37,6 +37,9 @@ func _game(player_hero: Dictionary, enemy_hero: Dictionary, decks: Dictionary,
 	}}
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var opp: GDScript = load(OPPONENT_PATH)
@@ -221,3 +224,4 @@ func run(failures: Array[String]) -> void:
 	}
 	h.assert_eq(opp.decide(empty_view, pol_high, table), {"type": "end_turn"},
 		"③空手牌且 atk 0⇒end_turn", failures)
+	completed = true

@@ -13,8 +13,12 @@ extends RefCounted
 ##                        同键相邻 after→before 全等跨回合成立，无需分段容忍。
 ##   ②entry-divergence —— 逐 seq 对比 shadow vs 运行时条目：seq 错位或字段不等
 ##                        （expected=shadow 条目，actual=运行时条目）
-##   ③tail-extra       —— shadow 比 runtime 多出条目（log 多记了没入账的动作；
-##                        expected=首个多出条目，actual=null）
+##   ③tail-extra       —— 一侧比另一侧多出条目（任一方向皆红）：shadow 多出
+##                        =runtime 短了（log 多记了没入账的动作/条目被删到
+##                        尾部），expected=首个多出条目 actual=null；runtime
+##                        多出=伪造条目（含 before=after=链头现值的无操作假
+##                        条——①链/②前缀/④终局都抓不住的隐形形），
+##                        expected=null actual=首个多出条目
 ##   ④final-state      —— 终局全等：双方 heroes 四字段+winner。运行时终局
 ##                        heroes 值从账本推导（各 (target,field) 键取最后一条
 ##                        after，未上账字段取开局缺省）；winner 对账走
@@ -67,10 +71,16 @@ static func audit(deck_player: Array, deck_enemy: Array, seed: int,
 				or shadow_entry != runtime_entry:
 			return _reject(int(runtime_entry["seq"]), "entry-divergence",
 				shadow_entry, runtime_entry)
-	# ③ shadow 多出条目（runtime 短了：条目被删到尾部 / log 多记动作）
+	# ③ tail-extra（双向）：任一侧多出条目即红。shadow 多出=runtime 短了
+	#（条目被删到尾部 / log 多记动作）；runtime 多出=伪造条目（含
+	# before=after=链头现值的无操作假条，②④ 抓不住）。expected 取 shadow
+	# 侧、actual 取 runtime 侧（与 ② 同向），无对方条目的一侧给 null。
 	if shadow_entries.size() > runtime_entries.size():
 		var extra: Dictionary = shadow_entries[runtime_entries.size()]
 		return _reject(int(extra["seq"]), "tail-extra", extra, null)
+	if runtime_entries.size() > shadow_entries.size():
+		var extra_rt: Dictionary = runtime_entries[shadow_entries.size()]
+		return _reject(int(extra_rt["seq"]), "tail-extra", null, extra_rt)
 	# ④ 终局全等
 	return _final_state(battle, shadow["state"], ledger, runtime_winner)
 

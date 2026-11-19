@@ -6,6 +6,9 @@ const HARNESS_PATH := "res://tests/harness.gd"
 const LEDGER_PATH := "res://scripts/core/ledger.gd"
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var ledger: GDScript = load(LEDGER_PATH)
@@ -65,3 +68,4 @@ func run(failures: Array[String]) -> void:
 		"field": "hp", "target": "player_hero", "before": 30, "after": 28, "formula": "30-2"})
 	var ok3: Dictionary = ledger.first_chain_break(lg3["entries"])
 	h.assert_true(ok3["ok"], "异 target 异键各自成链不误报", failures)
+	completed = true

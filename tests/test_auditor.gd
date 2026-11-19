@@ -5,7 +5,8 @@ extends RefCounted
 ## 篡改四路各抓：改末条 after ⇒ entry-divergence（钉死）；删中段条 ⇒ ok=false
 ## + 删末条 ⇒ tail-extra（③ 正名形状，钉死）；append 假条目（before 硬伤）⇒
 ## chain-break；删 action_log 末条重交 ⇒ ok=false（kind 不钉死，按 brief 只断
-## ok=false）。
+## ok=false）；append 无操作假条目（before=after=链头现值，①链/②前缀/④终局
+## 全过得过的隐形形）⇒ tail-extra（③ 双向，runtime 侧多出，钉死）。
 ## seed=7 为 _work/probe_seed.gd 实测选点：aggro(player,aggressive) vs
 ## control(enemy,greedy) 31 动作 48 条目、敌方 hp 归零终局。
 ## 链检查口径=全局 first_chain_break 一次（refill 已改记真实前值——battle
@@ -41,6 +42,9 @@ func _play_full_game(battle: GDScript, opp: GDScript, agg: Dictionary,
 		battle.apply_action(game, opp.decide(view, policy, table))
 		actions += 1
 	return game
+
+
+var completed := false
 
 
 func run(failures: Array[String]) -> void:
@@ -143,7 +147,7 @@ func run(failures: Array[String]) -> void:
 	h.assert_true(not res3["ok"], "append 假条目 ⇒ ok=false", failures)
 	h.assert_true(res3["first_mismatch"] != null, "append 假条目 ⇒ 有 first_mismatch", failures)
 	h.assert_eq(res3["first_mismatch"]["kind"], "chain-break",
-		"append 假条目（before 硬伤）⇒ 段内断链 kind=chain-break", failures)
+		"append 假条目（before 硬伤）⇒ 全局断链 kind=chain-break", failures)
 
 	# ── 篡改四路：删 action_log 末条重交 ⇒ ok=false（kind 不钉死：
 	# 终局 heroes/winner 从 ledger 推导 vs shadow 少一步演进，final-state 形） ──
@@ -153,6 +157,24 @@ func run(failures: Array[String]) -> void:
 		game["ledger"], table)
 	h.assert_true(not res4["ok"], "删 log 末条 ⇒ ok=false", failures)
 	h.assert_true(res4["first_mismatch"] != null, "删 log 末条 ⇒ 有 first_mismatch", failures)
+
+	# ── 篡改五路：append 无操作假条目（before=after=链头现值——①链连续、
+	# ②共同前缀全等、④终局推导不变，「隐形」形）⇒ runtime 比 shadow 多条
+	# ⇒ tail-extra（③ 双向：expected=null（无 shadow 对手条目），
+	# actual=首个多出条目=假条目） ──
+	var t5: Dictionary = (game["ledger"] as Dictionary).duplicate(true)
+	var noop: Dictionary = (entries[entries.size() - 1] as Dictionary).duplicate()
+	noop["before"] = noop["after"]
+	ledger_lib.append(t5, noop)
+	h.assert_eq((t5["entries"] as Array).size(), entries.size() + 1,
+		"无操作假条目已入账（%d→%d 条）" % [entries.size(), entries.size() + 1], failures)
+	var res5: Dictionary = auditor.audit(deck_p, deck_e, SEED, log, t5, table)
+	h.assert_true(not res5["ok"], "append 无操作假条目 ⇒ ok=false", failures)
+	var m5: Dictionary = res5["first_mismatch"]
+	h.assert_eq(m5["kind"], "tail-extra", "无操作假条目 ⇒ kind=tail-extra（runtime 侧多出）", failures)
+	h.assert_eq(int(m5["seq"]), int(noop["seq"]), "无操作假条目 ⇒ seq=假条目", failures)
+	h.assert_eq(m5["actual"], noop, "无操作假条目 ⇒ actual=假条目", failures)
+	h.assert_true(m5["expected"] == null, "无操作假条目 ⇒ expected=null（无 shadow 对手条目）", failures)
 
 	# ── runtime_winner 第 7 参：传对值 ⇒ ok；传错值 ⇒ ok=false kind=final-state
 	#（expected=shadow winner，actual=runtime_winner） ──
@@ -166,3 +188,4 @@ func run(failures: Array[String]) -> void:
 	h.assert_eq(mw["kind"], "final-state", "runtime_winner 错值 ⇒ kind=final-state", failures)
 	h.assert_eq(mw["expected"], "player", "runtime_winner 错值 ⇒ expected=shadow winner", failures)
 	h.assert_eq(mw["actual"], "enemy", "runtime_winner 错值 ⇒ actual=runtime_winner", failures)
+	completed = true

@@ -232,14 +232,16 @@ func _on_start_pressed() -> void:
 	})
 
 
-## 成绩册最近条目 → 行文本（追加序原序，尾部最近）。
+## 成绩册最近条目 → 行文本（尾切统一走 scorebook.recent——追加序=最近序的
+## 语义只在 scorebook 一处；#N 编号沿用全册全局位次）。
 func _recent_lines(storage) -> Array[String]:
-	var book: Array = SCOREBOOK.load_book(storage)
+	var full_book: Array = SCOREBOOK.load_book(storage)
+	var book: Array = SCOREBOOK.recent(full_book, RECENT_COUNT)
+	var offset: int = full_book.size() - book.size()
 	var lines: Array[String] = []
-	var idx: int = maxi(0, book.size() - RECENT_COUNT)
-	for i in range(idx, book.size()):
+	for i in book.size():
 		var entry: Dictionary = book[i]
-		lines.append("#%d seed=%d %s vs %s · T%d · %s · %s" % [i + 1,
+		lines.append("#%d seed=%d %s vs %s · T%d · %s · %s" % [offset + i + 1,
 			int(entry.get("seed", 0)), entry.get("deck", "?"), entry.get("opponent", "?"),
 			int(entry.get("turns", 0)), entry.get("result", "?"),
 			entry.get("finished_at", "?")])

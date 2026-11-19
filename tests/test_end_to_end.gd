@@ -38,6 +38,9 @@ func _load_deck(path: String) -> Array:
 	return data["cards"]
 
 
+var completed := false
+
+
 func run(failures: Array[String]) -> void:
 	var h: GDScript = load(HARNESS_PATH)
 	var battle: GDScript = load(BATTLE_PATH)
@@ -104,6 +107,7 @@ func run(failures: Array[String]) -> void:
 		h.assert_true(audit["ok"], "%s audit ok%s" % [tag, _mismatch_note(audit)], failures)
 		print("[e2e] %s → winner=%s turns=%d actions=%d audit_ok=%s" %
 			[tag, winner, turns, actions, audit["ok"]])
+	completed = true
 
 
 ## 审计红时把 first_mismatch 摘要拼进断言 label，便于定位；绿时返回空串。

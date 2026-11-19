@@ -159,6 +159,8 @@ static func _damage_hp(ledger: Dictionary, turn: int, actor: String, foe: String
 ## side_turns+1 → refill（before=本侧能量现值=真实前值——链连续性要求
 ## 同键相邻条目 after→before 全等，after=min(side_turns,10)）→
 ## 抽 1（空库 ⇒ pending_loser=进手方）→ MAIN → attack_used 复位 → 终判。
+## 挂账披露：spec 状态机清单中的 TURN_END 相位被有意跳过——纯标记相位、
+## 无行为面（无事件接受、无账本指纹），MAIN 直接切行动方。
 static func _end_turn(game: Dictionary) -> Dictionary:
 	var ledger_lib: GDScript = load(LEDGER_PATH)
 	var state: Dictionary = game["state"]

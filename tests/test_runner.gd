@@ -3,6 +3,9 @@ extends SceneTree
 ##   Godot_v4.7-stable_win64_console.exe --headless --path . --script res://tests/test_runner.gd
 ## 自动发现 res://tests/test_*.gd（排除 runner 自身），逐个执行 run(failures)；
 ## 全绿打印 ALL PASS 并 quit(0)，否则逐行 FAIL: <label> 后 quit(1)。
+## 套件契约：每个套件声明 `var completed := false`，并以 `completed = true`
+## 作为 run() 的最后一条语句——runner 事后查该旗标，run() 中途 SCRIPT ERROR
+## 崩掉（GDScript 无 try/catch）时旗标留 false ⇒ 红不放行。
 
 const TESTS_DIR := "res://tests"
 const SELF_PATH := "res://tests/test_runner.gd"
@@ -28,6 +31,12 @@ func _init() -> void:
 		print("[suite] %s — %d checks, %d failed" % [
 			path, harness.count, failures.size() - suite_failures,
 		])
+		# 完成金丝雀：run() 必须跑到末尾置 completed=true；中途 SCRIPT ERROR
+		# 崩掉时旗标留 false——checks>0 也可能是崩前记的部分数，不能绿。
+		# 动态 get：套件类型对 runner 是 Variant 面；缺旗标（get 得 null）/
+		# 留 false 都算未完成——严格 != true 比较（bool(null) 无构造，会崩）。
+		if instance.get("completed") != true:
+			failures.append("%s 未跑到 run() 末尾（中途 SCRIPT ERROR？）" % path)
 		if harness.count == 0:
 			# 套件记 0 checks=红不是绿：run() 中途脚本崩（如 load() 得 null 后
 			# 断言调用 SCRIPT ERROR 中止本套件）会留下 0 checks 0 failed 的
