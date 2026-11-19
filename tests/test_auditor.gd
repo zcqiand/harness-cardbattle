@@ -7,10 +7,10 @@ extends RefCounted
 ## chain-break；删 action_log 末条重交 ⇒ ok=false（kind 不钉死，按 brief 只断
 ## ok=false）。
 ## seed=7 为 _work/probe_seed.gd 实测选点：aggro(player,aggressive) vs
-## control(enemy,greedy) 31 动作 48 条目、敌方 hp 归零终局（④ winner 从
-## ledger 推导依赖 hp 终局形状，deck-out/30 帽终局推导不出，选点须避开）。
-## 链检查注：诚实局存在合法「断链」形——refill 条目 before=0 不累积（battle
-## 设计），① 按 turn 分段查（见 auditor.gd 头注），故改末条 after 不误触 ①。
+## control(enemy,greedy) 31 动作 48 条目、敌方 hp 归零终局。
+## 链检查口径=全局 first_chain_break 一次（refill 已改记真实前值——battle
+## 同批修复，链跨回合全局成立，无需分段容忍）；winner 对账走 runtime_winner
+## 第 7 参（传对值 ok/传错值 final-state，账本无 winner 指纹，由调用方供给）。
 
 const HARNESS_PATH := "res://tests/harness.gd"
 const AUDITOR_PATH := "res://scripts/core/auditor.gd"
@@ -153,3 +153,16 @@ func run(failures: Array[String]) -> void:
 		game["ledger"], table)
 	h.assert_true(not res4["ok"], "删 log 末条 ⇒ ok=false", failures)
 	h.assert_true(res4["first_mismatch"] != null, "删 log 末条 ⇒ 有 first_mismatch", failures)
+
+	# ── runtime_winner 第 7 参：传对值 ⇒ ok；传错值 ⇒ ok=false kind=final-state
+	#（expected=shadow winner，actual=runtime_winner） ──
+	var res_w_ok: Dictionary = auditor.audit(deck_p, deck_e, SEED, log,
+		game["ledger"], table, "player")
+	h.assert_true(res_w_ok["ok"], "runtime_winner 传对值 ⇒ ok", failures)
+	var res_w_bad: Dictionary = auditor.audit(deck_p, deck_e, SEED, log,
+		game["ledger"], table, "enemy")
+	h.assert_true(not res_w_bad["ok"], "runtime_winner 传错值 ⇒ ok=false", failures)
+	var mw: Dictionary = res_w_bad["first_mismatch"]
+	h.assert_eq(mw["kind"], "final-state", "runtime_winner 错值 ⇒ kind=final-state", failures)
+	h.assert_eq(mw["expected"], "player", "runtime_winner 错值 ⇒ expected=shadow winner", failures)
+	h.assert_eq(mw["actual"], "enemy", "runtime_winner 错值 ⇒ actual=runtime_winner", failures)

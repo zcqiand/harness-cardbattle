@@ -252,7 +252,7 @@ func run(failures: Array[String]) -> void:
 	h.assert_eq((g29["state"] as Dictionary)["active"], "enemy", "29 帽正常切侧", failures)
 	h.assert_eq(battle.turn_count(g29), 30, "29+2 切侧后 turn_count=30", failures)
 
-	# ── end_turn 完整自动步：切侧/side_turns/refill 不累积/抽 1/复位/落账 ──
+	# ── end_turn 完整自动步：切侧/side_turns/refill 记真前值/抽 1/复位/落账 ──
 	var gt: Dictionary = battle.start(deck_p, deck_e, SEED, table)
 	var stt: Dictionary = gt["state"]
 	(stt["heroes"] as Dictionary)["enemy_hero"]["energy"] = 15
@@ -263,7 +263,7 @@ func run(failures: Array[String]) -> void:
 	h.assert_eq(stt["phase"], "MAIN", "自动步后 MAIN", failures)
 	h.assert_eq(stt["side_turns"], {"player": 1, "enemy": 2}, "enemy side_turns=2", failures)
 	h.assert_eq((stt["heroes"] as Dictionary)["enemy_hero"]["energy"], 2,
-		"能量 refill=2（before=0 不累积）", failures)
+		"能量 refill=2（真前值 15 落账后归 2）", failures)
 	h.assert_eq((stt["decks"] as Dictionary)["enemy"].size(), enemy_deck_n - 1,
 		"自动步抽 1", failures)
 	h.assert_eq((stt["hands"] as Dictionary)["enemy"].size(), 4, "敌手牌 3→4", failures)
@@ -280,7 +280,7 @@ func run(failures: Array[String]) -> void:
 		h.assert_eq(rf_t["actor"], "enemy", "refill 条 actor=enemy", failures)
 		h.assert_eq(rf_t["card"], "", "refill 条 card=空", failures)
 		h.assert_eq(rf_t["target"], "enemy_hero", "refill 条 target=enemy_hero", failures)
-		h.assert_eq(rf_t["before"], 0, "refill 条 before=0", failures)
+		h.assert_eq(rf_t["before"], 15, "refill 条 before=真前值（本侧能量现值 15）", failures)
 		h.assert_eq(rf_t["after"], 2, "refill 条 after=min(2,10)=2", failures)
 		h.assert_eq(rf_t["formula"], "refill(2)", "refill 条 formula=refill(2)", failures)
 	h.assert_eq(battle.turn_count(gt), 2, "end_turn 后 turn_count=2", failures)

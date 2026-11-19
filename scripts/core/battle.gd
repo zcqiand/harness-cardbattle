@@ -156,7 +156,8 @@ static func _damage_hp(ledger: Dictionary, turn: int, actor: String, foe: String
 
 ## end_turn：action_log 记录 → 终判一次（防回合末忘判，终局则不切侧）→
 ## 30 帽（切侧前当前侧满帽且局未终 ⇒ draw，不再切侧）→ 切侧自动步：
-## side_turns+1 → refill（before=0 不累积，after=min(side_turns,10)）→
+## side_turns+1 → refill（before=本侧能量现值=真实前值——链连续性要求
+## 同键相邻条目 after→before 全等，after=min(side_turns,10)）→
 ## 抽 1（空库 ⇒ pending_loser=进手方）→ MAIN → attack_used 复位 → 终判。
 static func _end_turn(game: Dictionary) -> Dictionary:
 	var ledger_lib: GDScript = load(LEDGER_PATH)
@@ -176,9 +177,11 @@ static func _end_turn(game: Dictionary) -> Dictionary:
 	state["phase"] = "TURN_START"
 	var refill := mini(int(side_turns[nxt]), MAX_ENERGY)
 	var hero: Dictionary = (state["heroes"] as Dictionary)[nxt + "_hero"]
+	# before=本侧能量现值（真实前值）：链连续性同键相邻 after→before 全等，
+	# 记 0 会把被丢弃的剩余能量变成假条目（审计全局链检查即红）。
 	ledger_lib.append(game["ledger"], {"turn": _turn_no(state), "actor": nxt,
 		"event": "turn_start", "card": "", "field": "energy",
-		"target": nxt + "_hero", "before": 0, "after": refill,
+		"target": nxt + "_hero", "before": int(hero["energy"]), "after": refill,
 		"formula": "refill(%d)" % refill})
 	hero["energy"] = refill
 	var deck: Array = (state["decks"] as Dictionary)[nxt]

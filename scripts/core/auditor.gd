@@ -7,28 +7,29 @@ extends RefCounted
 ## card_table 入参只供 start 洗牌/开局链路，两路同源一致。
 ##
 ## 对账 diff 顺序（报第一条命中即返）：
-##   ①chain-break      —— ledger.first_chain_break 按 turn 分段逐段非 ok
-##                        （expected/actual=断点两侧值）。分段原因：battle._end_turn
-##                        的 refill 条目 before=0「不累积」是设计形状——能量链
-##                        每回合重置，整账本裸跑 first_chain_break 会把每个
-##                        有余能过回合的诚实局全打成断链（实测 seed=7 seq 21）；
-##                        跨回合连续性（hp 等）由 ② 逐条全等覆盖，不漏抓。
+##   ①chain-break      —— ledger.first_chain_break 全局一次非 ok
+##                        （expected/actual=断点两侧值）。链全局成立的落点在
+##                        源头：refill 条目记真实前值（本侧能量现值，非 0），
+##                        同键相邻 after→before 全等跨回合成立，无需分段容忍。
 ##   ②entry-divergence —— 逐 seq 对比 shadow vs 运行时条目：seq 错位或字段不等
 ##                        （expected=shadow 条目，actual=运行时条目）
 ##   ③tail-extra       —— shadow 比 runtime 多出条目（log 多记了没入账的动作；
 ##                        expected=首个多出条目，actual=null）
-##   ④final-state      —— 终局全等：双方 heroes 四字段+winner。运行时终局值从
-##                        账本推导（各 (target,field) 键取最后一条 after，未上账
-##                        字段取开局缺省）；winner 推导走 battle._judge 本尊
-##                        （同一终判纯函数，非重实现）。
+##   ④final-state      —— 终局全等：双方 heroes 四字段+winner。运行时终局
+##                        heroes 值从账本推导（各 (target,field) 键取最后一条
+##                        after，未上账字段取开局缺省）；winner 对账走
+##                        runtime_winner 入参——非 null 时与 shadow 终局
+##                        winner 全等比对（不等 ⇒ final-state），null 时跳过
+##                        该项（winner 是否参与对账由调用方决定：调用方持有
+##                        运行时 state.winner 就传进来，牌库枯竭/30 帽等
+##                        账本无指纹的终局形状靠它兜住）。
 ## 返回 {"ok": bool, "first_mismatch": null | {"seq": int, "kind": String,
 ##        "expected": Variant, "actual": Variant}}；④无条目可指，seq=运行时
 ##        末条 seq（空账本给 0）。
 ##
-## 边界（在册）：④ 的 winner 推导只覆盖 hp 终局形状——牌库枯竭（pending_loser）
-## 与 30 回合帽的 draw 在账本里没有 hp≤0 指纹，推导不出 winner；此类对局
-## 请以 hp 终局对局审计或在调用面另行对 winner（调用方持有运行时 state 时
-## 可自行比对 state.winner 与 shadow 侧）。
+## 边界（在册）：winner 对账依赖 runtime_winner 入参——账本里没有 winner
+## 指纹（牌库枯竭/30 回合帽等终局在 heroes 四字段上与未终局同形），不传
+## 时 ④ 只对账 heroes 四字段、winner 不设防；调用方持有 state.winner 就应传。
 
 const BATTLE_PATH := "res://scripts/core/battle.gd"
 const LEDGER_PATH := "res://scripts/core/ledger.gd"
@@ -37,14 +38,17 @@ const LEDGER_PATH := "res://scripts/core/ledger.gd"
 const AUDITED_FIELDS: Array[String] = ["hp", "shield", "atk", "energy"]
 
 
-## 审计入参：双方牌组、种子、运行时 action_log、运行时账本、卡表。
+## 审计入参：双方牌组、种子、运行时 action_log、运行时账本、卡表、
+## runtime_winner（可选，缺省 null——调用方持有运行时 winner 时传入参与
+## ④ 终局对账，见 ④ 注）。
 ## 纯读取——不改动任何入参（shadow 演进发生在 battle.start 自建的副本上）。
 static func audit(deck_player: Array, deck_enemy: Array, seed: int,
-		action_log: Array, ledger: Dictionary, card_table: Dictionary) -> Dictionary:
+		action_log: Array, ledger: Dictionary, card_table: Dictionary,
+		runtime_winner: Variant = null) -> Dictionary:
 	var battle: GDScript = load(BATTLE_PATH)
 	var ledger_lib: GDScript = load(LEDGER_PATH)
-	# ① 链连续性（按 turn 分段逐段查——理由见文件头 ① 注）
-	var chain: Dictionary = _first_chain_break(ledger_lib, ledger)
+	# ① 链连续性（全局一次——链成立的落点在源头 refill 记真前值，见头注）
+	var chain: Dictionary = ledger_lib.first_chain_break(ledger["entries"])
 	if not chain["ok"]:
 		return _reject(int(chain["seq"]), "chain-break", chain["expected"], chain["actual"])
 	# 独立重放：shadow game 从 start 重建，逐条消费 action_log。
@@ -68,7 +72,7 @@ static func audit(deck_player: Array, deck_enemy: Array, seed: int,
 		var extra: Dictionary = shadow_entries[runtime_entries.size()]
 		return _reject(int(extra["seq"]), "tail-extra", extra, null)
 	# ④ 终局全等
-	return _final_state(battle, shadow["state"], ledger)
+	return _final_state(battle, shadow["state"], ledger, runtime_winner)
 
 
 static func _reject(seq: int, kind: String, expected: Variant, actual: Variant) -> Dictionary:
@@ -76,37 +80,12 @@ static func _reject(seq: int, kind: String, expected: Variant, actual: Variant) 
 		"first_mismatch": {"seq": seq, "kind": kind, "expected": expected, "actual": actual}}
 
 
-## ① 链检查：按条目 turn 分段，每段各自跑 ledger.first_chain_break 本尊，
-## 任一段断链即返回该断点。段内链=回合一手（refill→costs、穿盾两条、heal
-## 段）自洽；段间断链不可能是真篡改的漏检——被改条目若在自己段内断链①抓，
-## 否则字段值必变②抓（逐条全等与段划分无关）。
-static func _first_chain_break(ledger_lib: GDScript, ledger: Dictionary) -> Dictionary:
-	var by_turn: Dictionary = {}
-	for e_v in ledger["entries"]:
-		var e: Dictionary = e_v
-		var turn := int(e["turn"])
-		if not by_turn.has(turn):
-			by_turn[turn] = []
-		(by_turn[turn] as Array).append(e)
-	var turns: Array = by_turn.keys()
-	turns.sort()
-	for turn in turns:
-		var seg: Dictionary = ledger_lib.first_chain_break(by_turn[turn])
-		if not seg["ok"]:
-			return seg
-	return {"ok": true}
-
-
-## ④ 终局全等：heroes 四字段+winner。运行时终局值从账本推导（数据的最后一手），
-## winner 用 battle._judge 本尊对推导 heroes 再判（同一终判口径，非重实现）。
-## expected=shadow 值，actual=运行时推导值（与 ②③ 同向）。
+## ④ 终局全等：heroes 四字段（expected=shadow 值，actual=账本推导值，与 ②③
+## 同向）+ winner（runtime_winner 非 null 时比对：expected=shadow winner，
+## actual=runtime_winner；null 时跳过该项，见文件头 ④ 注）。
 static func _final_state(battle: GDScript, shadow_state: Dictionary,
-		ledger: Dictionary) -> Dictionary:
+		ledger: Dictionary, runtime_winner: Variant) -> Dictionary:
 	var runtime_heroes: Dictionary = _heroes_from_ledger(battle, ledger)
-	var judge_probe: Dictionary = {"heroes": runtime_heroes, "pending_loser": ""}
-	battle._judge(judge_probe)
-	# _judge 在无人判负时不写 winner 键直接返回 false——get 缺省 null 对齐。
-	var runtime_winner: Variant = judge_probe.get("winner", null)
 	var shadow_heroes: Dictionary = shadow_state["heroes"]
 	for side in ["player_hero", "enemy_hero"]:
 		var shadow_hero: Dictionary = shadow_heroes[side]
@@ -115,7 +94,7 @@ static func _final_state(battle: GDScript, shadow_state: Dictionary,
 			if shadow_hero[field] != runtime_hero[field]:
 				return _reject(_last_seq(ledger), "final-state",
 					shadow_hero[field], runtime_hero[field])
-	if shadow_state["winner"] != runtime_winner:
+	if runtime_winner != null and shadow_state["winner"] != runtime_winner:
 		return _reject(_last_seq(ledger), "final-state",
 			shadow_state["winner"], runtime_winner)
 	return {"ok": true, "first_mismatch": null}
