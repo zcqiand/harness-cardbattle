@@ -184,6 +184,7 @@ func _test_record_persists_via_file_storage(h: GDScript, scorebook: GDScript, st
 	# 用 res:// 侧路径探针验证鸭子接线 + load_book 对 file_storage 读面成立）
 	var impl: RefCounted = storage_impl.new()
 	var probe_path := "res://_work/scorebook_probe.json"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://_work"))  # CI 新克隆无 _work/（git-ignore），FileAccess 不自建目录
 	h.assert_true(impl.save_text(probe_path, JSON.stringify([])), "file_storage 探针档写入", failures)
 	var mem_like: MemStorage = MemStorage.new()
 	mem_like.store[scorebook.SAVE_PATH] = impl.load_text(probe_path)
