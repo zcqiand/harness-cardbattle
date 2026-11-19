@@ -1,0 +1,14 @@
+{
+  "id": "control",
+  "name": "磐石壁垒",
+  "cards": [
+    "iron_skin", "iron_skin", "iron_skin",
+    "barrier_wall", "barrier_wall", "barrier_wall",
+    "guardian_prayer", "guardian_prayer", "guardian_prayer",
+    "holy_light", "holy_light", "holy_light",
+    "minor_mend", "minor_mend", "minor_mend",
+    "scrying_orb", "scrying_orb",
+    "gather_thoughts", "gather_thoughts",
+    "lightning_strike"
+  ]
+}

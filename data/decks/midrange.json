@@ -1,0 +1,17 @@
+{
+  "id": "midrange",
+  "name": "均衡行者",
+  "cards": [
+    "poison_dagger", "poison_dagger",
+    "lightning_strike", "lightning_strike",
+    "vampiric_strike", "vampiric_strike",
+    "war_banner",
+    "battle_cleric", "battle_cleric",
+    "holy_light", "holy_light",
+    "iron_skin", "iron_skin",
+    "scholar_scroll", "scholar_scroll",
+    "arcane_insight",
+    "scrying_orb", "scrying_orb",
+    "gather_thoughts", "gather_thoughts"
+  ]
+}

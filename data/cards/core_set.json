@@ -1,0 +1,22 @@
+{
+  "cards": [
+    { "id": "fire_bolt", "name": "火焰箭", "cost": 1, "text": "对敌方英雄造成 3 点伤害。", "effects": [{ "type": "damage", "value": 3, "target": "enemy_hero" }] },
+    { "id": "poison_dagger", "name": "毒匕", "cost": 2, "text": "对敌方英雄造成 3 点伤害。", "effects": [{ "type": "damage", "value": 3, "target": "enemy_hero" }] },
+    { "id": "lightning_strike", "name": "雷击", "cost": 3, "text": "对敌方英雄造成 6 点伤害。", "effects": [{ "type": "damage", "value": 6, "target": "enemy_hero" }] },
+    { "id": "meteor_call", "name": "陨石术", "cost": 5, "text": "对敌方英雄造成 9 点伤害。", "effects": [{ "type": "damage", "value": 9, "target": "enemy_hero" }] },
+    { "id": "minor_mend", "name": "轻微治疗", "cost": 1, "text": "为己方英雄回复 4 点生命。", "effects": [{ "type": "heal", "value": 4, "target": "player_hero" }] },
+    { "id": "holy_light", "name": "圣光", "cost": 3, "text": "为己方英雄回复 7 点生命。", "effects": [{ "type": "heal", "value": 7, "target": "player_hero" }] },
+    { "id": "iron_skin", "name": "铁肤术", "cost": 2, "text": "为己方英雄获得 5 点护盾。", "effects": [{ "type": "gain_shield", "value": 5, "target": "player_hero" }] },
+    { "id": "barrier_wall", "name": "屏障壁", "cost": 4, "text": "为己方英雄获得 10 点护盾。", "effects": [{ "type": "gain_shield", "value": 10, "target": "player_hero" }] },
+    { "id": "guardian_prayer", "name": "守护祈祷", "cost": 3, "text": "为己方英雄回复 4 点生命并获得 4 点护盾。", "effects": [{ "type": "heal", "value": 4, "target": "player_hero" }, { "type": "gain_shield", "value": 4, "target": "player_hero" }] },
+    { "id": "sharpen_blade", "name": "磨刀", "cost": 1, "text": "己方英雄攻击力永久 +2。", "effects": [{ "type": "buff_attack", "value": 2, "target": "player_hero" }] },
+    { "id": "berserk_rage", "name": "狂暴", "cost": 2, "text": "己方英雄攻击力永久 +3。", "effects": [{ "type": "buff_attack", "value": 3, "target": "player_hero" }] },
+    { "id": "war_banner", "name": "战旗", "cost": 3, "text": "己方英雄攻击力永久 +4。", "effects": [{ "type": "buff_attack", "value": 4, "target": "player_hero" }] },
+    { "id": "gather_thoughts", "name": "凝神", "cost": 1, "text": "抽 1 张牌。", "effects": [{ "type": "draw", "value": 1 }] },
+    { "id": "scholar_scroll", "name": "学者卷轴", "cost": 2, "text": "抽 2 张牌。", "effects": [{ "type": "draw", "value": 2 }] },
+    { "id": "arcane_insight", "name": "奥术洞见", "cost": 4, "text": "抽 3 张牌。", "effects": [{ "type": "draw", "value": 3 }] },
+    { "id": "vampiric_strike", "name": "吸血打击", "cost": 4, "text": "对敌方英雄造成 5 点伤害，为己方英雄回复 3 点生命。", "effects": [{ "type": "damage", "value": 5, "target": "enemy_hero" }, { "type": "heal", "value": 3, "target": "player_hero" }] },
+    { "id": "battle_cleric", "name": "战斗牧师", "cost": 2, "text": "己方英雄攻击力永久 +2，并回复 2 点生命。", "effects": [{ "type": "buff_attack", "value": 2, "target": "player_hero" }, { "type": "heal", "value": 2, "target": "player_hero" }] },
+    { "id": "scrying_orb", "name": "水晶球", "cost": 3, "text": "抽 2 张牌，并为己方英雄获得 3 点护盾。", "effects": [{ "type": "draw", "value": 2 }, { "type": "gain_shield", "value": 3, "target": "player_hero" }] }
+  ]
+}

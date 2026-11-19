@@ -1,0 +1,17 @@
+{
+  "id": "aggro",
+  "name": "烈焰冲锋",
+  "cards": [
+    "fire_bolt", "fire_bolt", "fire_bolt",
+    "poison_dagger", "poison_dagger",
+    "lightning_strike", "lightning_strike",
+    "meteor_call",
+    "vampiric_strike", "vampiric_strike",
+    "sharpen_blade", "sharpen_blade", "sharpen_blade",
+    "berserk_rage", "berserk_rage",
+    "war_banner",
+    "gather_thoughts", "gather_thoughts",
+    "holy_light",
+    "battle_cleric"
+  ]
+}
