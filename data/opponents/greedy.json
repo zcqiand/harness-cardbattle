@@ -1,0 +1,6 @@
+{
+  "id": "greedy",
+  "name": "贪婪型",
+  "attack_min_atk": 3,
+  "play_order": "lowest_cost"
+}

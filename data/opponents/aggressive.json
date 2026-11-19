@@ -1,0 +1,6 @@
+{
+  "id": "aggressive",
+  "name": "激进型",
+  "attack_min_atk": 1,
+  "play_order": "highest_cost"
+}
