@@ -175,6 +175,40 @@ func run(failures: Array[String]) -> void:
 		{"type": "play_card", "card": "minor_mend"},
 		"②lowest_cost⇒出最便宜 1 费", failures)
 
+	# ── decide ② tie-break：同费并列取原手牌序在前（手牌序与 id 序相反防
+	# 字典序掩盖——war_banner 在前，但 id 序 lightning_strike 在前） ──
+	var tie_view := {
+		"attack_available": false, "self_atk": 0, "self_energy": 5,
+		"self_hand": [
+			{"id": "war_banner", "cost": 3, "name": "战旗"},
+			{"id": "lightning_strike", "cost": 3, "name": "雷击"},
+		],
+	}
+	h.assert_eq(opp.decide(tie_view, pol_high, table),
+		{"type": "play_card", "card": "war_banner"},
+		"②同费并列 highest_cost⇒原手牌序在前的 war_banner", failures)
+	h.assert_eq(opp.decide(tie_view, pol_low, table),
+		{"type": "play_card", "card": "war_banner"},
+		"②同费并列 lowest_cost⇒原手牌序在前的 war_banner", failures)
+
+	# ── decide ① 阈值等值：self_atk == attack_min_atk ⇒ attack（≥ 显式锁） ──
+	var edge_view := {
+		"attack_available": true, "self_atk": 3, "self_energy": 0, "self_hand": [],
+	}
+	h.assert_eq(opp.decide(edge_view, pol_greedy, table), {"type": "attack"},
+		"①atk==attack_min_atk 等值⇒attack", failures)
+
+	# ── decide ② 防御：cost=-1 兜底条目永不可出（跳过不算可付） ──
+	var mystery_view := {
+		"attack_available": false, "self_atk": 0, "self_energy": 2,
+		"self_hand": [
+			{"id": "mystery", "cost": -1, "name": ""},
+			{"id": "holy_light", "cost": 3, "name": "圣光"},
+		],
+	}
+	h.assert_eq(opp.decide(mystery_view, pol_high, table), {"type": "end_turn"},
+		"②cost=-1 条目跳过，不返回其 play_card", failures)
+
 	# ── decide ③：全出不起且 attack 不可 ⇒ end_turn ──
 	var stuck_view := {
 		"attack_available": false, "self_atk": 0, "self_energy": 2,

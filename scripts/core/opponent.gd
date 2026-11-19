@@ -82,20 +82,31 @@ static func view_for(game: Dictionary, side: String) -> Dictionary:
 
 ## 决策（优先级从上到下）：①attack_available 且 self_atk ≥ attack_min_atk
 ## 且 self_atk>0 ⇒ attack；②按 play_order 排手牌（highest_cost=贵在前，
-## lowest_cost=便宜在前），第一张 self_energy 付得起的 ⇒ play_card；
-## ③否则 end_turn。花费读 view.self_hand 的 cost；card_table 入参保留
-## 签名位（未来校验/生成面用），当前不消费。并列花费取排序稳定后的首个。
+## lowest_cost=便宜在前），第一张 self_energy 付得起且 cost≥0 的 ⇒
+## play_card；③否则 end_turn。花费读 view.self_hand 的 cost；card_table
+## 入参保留签名位（未来校验/生成面用），当前不消费。
+## 确定性：sort_custom 非稳定排序，cost 并列时比原手牌序 index（先在手里的
+## 先出）补全序——同种子⇒同行动不因构建/手牌规模漂移；cost<0（view_for
+## 查无此卡的兜底条目）一律跳过，永不可出。
 static func decide(view: Dictionary, policy: Dictionary, _card_table: Dictionary) -> Dictionary:
 	var atk := int(view["self_atk"])
 	if view["attack_available"] and atk > 0 and atk >= int(policy["attack_min_atk"]):
 		return {"type": "attack"}
-	var hand: Array = (view["self_hand"] as Array).duplicate()
+	var hand: Array = view["self_hand"] as Array
+	var order: Array = []
+	for i in hand.size():
+		var card: Dictionary = hand[i]
+		order.append({"i": i, "cost": int(card["cost"]), "id": card["id"]})
 	var highest := (policy["play_order"] as String) == "highest_cost"
-	hand.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+	order.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if a["cost"] == b["cost"]:
+			return int(a["i"]) < int(b["i"])
 		return int(a["cost"]) > int(b["cost"]) if highest else int(a["cost"]) < int(b["cost"]))
 	var energy := int(view["self_energy"])
-	for card_v in hand:
-		var card: Dictionary = card_v
-		if energy >= int(card["cost"]):
-			return {"type": "play_card", "card": card["id"]}
+	for entry_v in order:
+		var entry: Dictionary = entry_v
+		if int(entry["cost"]) < 0:
+			continue
+		if energy >= int(entry["cost"]):
+			return {"type": "play_card", "card": entry["id"]}
 	return {"type": "end_turn"}
