@@ -1,50 +1,83 @@
-extends Node2D
-## 主场景脚本（骨架）：加载卡组 JSON 契约并做形状校验。
-## ch11 落回合状态机与效果结算断言；本骨架只证「契约文件可加载、可校验」。
+extends Control
+## 主场景（Task 11 三态机）：menu → battle → result → menu，jumper 同款
+## change_state 形状（enum Screen + _show_x 私有迁移 + _clear_ui 拆旧屏）。
+## menu 挂 menu_view（牌组/对手选择+成绩册），battle 挂 battle_view（收 finished
+## 广播），result 挂 result_view（审计报告；audit.ok 前置在 result_view 侧执行，
+## 入档也只在 ok 时发生）。
+## storage 鸭子接口（load_text/save_text）可注入（headless 冒烟传内存假件），
+## null 时 _ready 建 FileStorage（真 user:// 持久档）。
 
-const DECK_PATH := "res://data/cards/starter_deck.json"
+const MENU_VIEW := preload("res://scripts/menu_view.gd")
+const BATTLE_VIEW := preload("res://scripts/battle_view.gd")
+const RESULT_VIEW := preload("res://scripts/result_view.gd")
+const FILE_STORAGE := preload("res://scripts/file_storage.gd")
+
+enum Screen { MENU, BATTLE, RESULT }
+
+## 测试注入口：与 file_storage.gd 同签名的鸭子接口；null → FileStorage。
+var storage: RefCounted = null
+
+var _screen: Screen = Screen.MENU
+var _menu_view: Control = null
+var _battle_view: Control = null
+var _result_view: Control = null
+var _config: Dictionary = {}  # 当前局配置（再来一局用）
 
 
 func _ready() -> void:
-	var deck := load_deck(DECK_PATH)
-	if deck.is_empty():
-		push_error("卡组加载失败，见上方错误。")
-		return
-	print("卡组加载成功：%s（%d 张卡）" % [deck["name"], (deck["cards"] as Array).size()])
+	storage = storage if storage != null else FILE_STORAGE.new()
+	_show_menu()
 
 
-## 读取并解析卡组契约文件；任何一步失败返回空字典（fail-fast，错误经 push_error 上报）。
-func load_deck(path: String) -> Dictionary:
-	var file := FileAccess.open(path, FileAccess.READ)
-	if file == null:
-		push_error("卡组文件打不开：%s" % path)
-		return {}
-	var parsed: Variant = JSON.parse_string(file.get_as_text())
-	if typeof(parsed) != TYPE_DICTIONARY:
-		push_error("卡组契约不是 JSON 对象：%s" % path)
-		return {}
-	var deck: Dictionary = parsed
-	if not is_valid_deck(deck):
-		push_error("卡组契约形状不合法：%s" % path)
-		return {}
-	return deck
+## ——状态迁移——
+
+func _show_menu() -> void:
+	_screen = Screen.MENU
+	_clear_ui()
+	_menu_view = MENU_VIEW.new()
+	_menu_view.setup(storage)
+	_menu_view.start_selected.connect(_start_battle)
+	add_child(_menu_view)
 
 
-## 卡牌规约（骨架版）：必须有 name 与 cards；每张卡有 id/name/cost/attack/health，
-## 数值字段为非负数。
-func is_valid_deck(deck: Dictionary) -> bool:
-	if not deck.has_all(["name", "cards"]):
-		return false
-	var cards: Variant = deck["cards"]
-	if typeof(cards) != TYPE_ARRAY or (cards as Array).is_empty():
-		return false
-	for card in cards as Array:
-		if typeof(card) != TYPE_DICTIONARY:
-			return false
-		if not (card as Dictionary).has_all(["id", "name", "cost", "attack", "health"]):
-			return false
-		for key in ["cost", "attack", "health"]:
-			var value: Variant = (card as Dictionary)[key]
-			if not (value is float or value is int) or (value as float) < 0.0:
-				return false
-	return true
+func _start_battle(config: Dictionary) -> void:
+	_config = config
+	_clear_ui()
+	_screen = Screen.BATTLE
+	_battle_view = BATTLE_VIEW.new()
+	_battle_view.setup(config)
+	_battle_view.finished.connect(_on_battle_finished)
+	add_child(_battle_view)
+
+
+func _on_battle_finished(bundle: Dictionary) -> void:
+	_show_result(bundle)
+
+
+func _show_result(bundle: Dictionary) -> void:
+	_screen = Screen.RESULT
+	_clear_ui()
+	_result_view = RESULT_VIEW.new()
+	_result_view.setup(bundle, storage)
+	_result_view.rematch_pressed.connect(_rematch)
+	_result_view.back_to_menu_pressed.connect(_show_menu)
+	add_child(_result_view)
+
+
+## 再来一局：同配置重开（同牌组/同对手/同种子——审计重放面一致）。
+func _rematch() -> void:
+	_start_battle(_config)
+
+
+## ——UI 件——
+
+func _clear_ui() -> void:
+	if _menu_view != null:
+		_menu_view.queue_free()
+		_menu_view = null
+	if _battle_view != null:
+		_battle_view.queue_free()
+		_battle_view = null
+	if _result_view != null:
+		_result_view.queue_free()
+		_result_view = null
