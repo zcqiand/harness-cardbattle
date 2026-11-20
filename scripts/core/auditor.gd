@@ -46,6 +46,7 @@ const AUDITED_FIELDS: Array[String] = ["hp", "shield", "atk", "energy"]
 ## runtime_winner（可选，缺省 null——调用方持有运行时 winner 时传入参与
 ## ④ 终局对账，见 ④ 注）。
 ## 纯读取——不改动任何入参（shadow 演进发生在 battle.start 自建的副本上）。
+# @impl M03.F01.I02
 static func audit(deck_player: Array, deck_enemy: Array, seed: int,
 		action_log: Array, ledger: Dictionary, card_table: Dictionary,
 		runtime_winner: Variant = null) -> Dictionary:

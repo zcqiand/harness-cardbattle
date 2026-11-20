@@ -1,0 +1,437 @@
+{
+  "schema": 1,
+  "project": "harness-cardbattle",
+  "functions": {
+    "modules": 4,
+    "features": 11,
+    "items": 30
+  },
+  "warnings_total": 90,
+  "warnings": {
+    "已上线但无设计映射": [
+      "M01.F01.I01",
+      "M01.F01.I02",
+      "M01.F01.I03",
+      "M01.F02.I01",
+      "M01.F02.I02",
+      "M01.F02.I03",
+      "M01.F03.I01",
+      "M02.F01.I01",
+      "M02.F01.I02",
+      "M02.F01.I03",
+      "M02.F02.I01",
+      "M02.F02.I02",
+      "M02.F02.I03",
+      "M02.F03.I01",
+      "M02.F03.I02",
+      "M02.F03.I03",
+      "M02.F03.I04",
+      "M02.F04.I01",
+      "M02.F04.I02",
+      "M02.F04.I03",
+      "M02.F05.I01",
+      "M03.F01.I01",
+      "M03.F01.I02",
+      "M03.F01.I03",
+      "M03.F01.I04",
+      "M03.F02.I01",
+      "M03.F02.I02",
+      "M04.F01.I01",
+      "M04.F01.I02",
+      "M04.F01.I03"
+    ],
+    "已上线但无测试引用": [
+      "M01.F01.I01",
+      "M01.F01.I02",
+      "M01.F01.I03",
+      "M01.F02.I01",
+      "M01.F02.I02",
+      "M01.F02.I03",
+      "M01.F03.I01",
+      "M02.F01.I01",
+      "M02.F01.I02",
+      "M02.F01.I03",
+      "M02.F02.I01",
+      "M02.F02.I02",
+      "M02.F02.I03",
+      "M02.F03.I01",
+      "M02.F03.I02",
+      "M02.F03.I03",
+      "M02.F03.I04",
+      "M02.F04.I01",
+      "M02.F04.I02",
+      "M02.F04.I03",
+      "M02.F05.I01",
+      "M03.F01.I01",
+      "M03.F01.I02",
+      "M03.F01.I03",
+      "M03.F01.I04",
+      "M03.F02.I01",
+      "M03.F02.I02",
+      "M04.F01.I01",
+      "M04.F01.I02",
+      "M04.F01.I03"
+    ],
+    "已上线但不在任何流程且非孤儿白名单": [
+      "M01.F01.I01",
+      "M01.F01.I02",
+      "M01.F01.I03",
+      "M01.F02.I01",
+      "M01.F02.I02",
+      "M01.F02.I03",
+      "M01.F03.I01",
+      "M02.F01.I01",
+      "M02.F01.I02",
+      "M02.F01.I03",
+      "M02.F02.I01",
+      "M02.F02.I02",
+      "M02.F02.I03",
+      "M02.F03.I01",
+      "M02.F03.I02",
+      "M02.F03.I03",
+      "M02.F03.I04",
+      "M02.F04.I01",
+      "M02.F04.I02",
+      "M02.F04.I03",
+      "M02.F05.I01",
+      "M03.F01.I01",
+      "M03.F01.I02",
+      "M03.F01.I03",
+      "M03.F01.I04",
+      "M03.F02.I01",
+      "M03.F02.I02",
+      "M04.F01.I01",
+      "M04.F01.I02",
+      "M04.F01.I03"
+    ]
+  },
+  "unreachable_shipped": [],
+  "function_map": {
+    "M01.F01.I01": {
+      "name": "菜单屏页面",
+      "status": "已上线",
+      "type": "页面",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/menu_view.gd"
+      ]
+    },
+    "M01.F01.I02": {
+      "name": "拒载牌组策略红字报因",
+      "status": "已上线",
+      "type": "报表",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/menu_view.gd"
+      ]
+    },
+    "M01.F01.I03": {
+      "name": "开始按钮",
+      "status": "已上线",
+      "type": "按钮",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/menu_view.gd"
+      ]
+    },
+    "M01.F02.I01": {
+      "name": "牌组选择",
+      "status": "已上线",
+      "type": "按钮",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/menu_view.gd"
+      ]
+    },
+    "M01.F02.I02": {
+      "name": "对手策略选择与校验闸",
+      "status": "已上线",
+      "type": "查询",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/menu_view.gd"
+      ]
+    },
+    "M01.F02.I03": {
+      "name": "种子显示与确定性开局",
+      "status": "已上线",
+      "type": "报表",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/menu_view.gd"
+      ]
+    },
+    "M01.F03.I01": {
+      "name": "最近成绩读取展示",
+      "status": "已上线",
+      "type": "报表",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/menu_view.gd"
+      ]
+    },
+    "M02.F01.I01": {
+      "name": "战斗屏页面",
+      "status": "已上线",
+      "type": "页面",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/battle_view.gd"
+      ]
+    },
+    "M02.F01.I02": {
+      "name": "账本流滚动列表",
+      "status": "已上线",
+      "type": "报表",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/battle_view.gd"
+      ]
+    },
+    "M02.F01.I03": {
+      "name": "出牌攻击结束回合按钮",
+      "status": "已上线",
+      "type": "按钮",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/battle_view.gd"
+      ]
+    },
+    "M02.F02.I01": {
+      "name": "造局 start",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F02.I02": {
+      "name": "apply_action 唯一改状态入口",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F02.I03": {
+      "name": "终判口径收敛",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F03.I01": {
+      "name": "卡表校验与加载",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F03.I02": {
+      "name": "效果解释器",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F03.I03": {
+      "name": "账本权威",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F03.I04": {
+      "name": "回合状态机",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F04.I01": {
+      "name": "策略加载校验",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F04.I02": {
+      "name": "decide 三分支决策",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F04.I03": {
+      "name": "view 信息面裁剪投影",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M02.F05.I01": {
+      "name": "mulberry32 与 channel 派生",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M03.F01.I01": {
+      "name": "结算屏页面",
+      "status": "已上线",
+      "type": "页面",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/result_view.gd"
+      ]
+    },
+    "M03.F01.I02": {
+      "name": "独立重放对账审计",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M03.F01.I03": {
+      "name": "对账结果红绿报告",
+      "status": "已上线",
+      "type": "报表",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/result_view.gd"
+      ]
+    },
+    "M03.F01.I04": {
+      "name": "再来一局与回菜单按钮",
+      "status": "已上线",
+      "type": "按钮",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": [
+        "scripts/result_view.gd"
+      ]
+    },
+    "M03.F02.I01": {
+      "name": "追加式成绩册",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M03.F02.I02": {
+      "name": "本地持久档读写",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M04.F01.I01": {
+      "name": "核心卡池",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M04.F01.I02": {
+      "name": "牌组集",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    },
+    "M04.F01.I03": {
+      "name": "对手策略集",
+      "status": "已上线",
+      "type": "接口",
+      "requirements": [],
+      "flows": [],
+      "designs": [],
+      "tests": [],
+      "entry": []
+    }
+  }
+}

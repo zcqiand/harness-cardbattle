@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "suite_version": "0.6.0",
+  "project": "harness-cardbattle",
+  "stack": "generic",
+  "gates": {
+    "L4": {
+      "name": "测试（Godot 4.7 headless 全量）",
+      "cmd": [
+        "D:/qiand-life/3-resources/8-ego/software/godot/Godot_v4.7-stable_win64_console.exe",
+        "--headless",
+        "--path",
+        ".",
+        "--script",
+        "res://tests/test_runner.gd"
+      ],
+      "fix": "先让 test_runner.gd 打出 ALL PASS（exit code 唯一真相 + ALL PASS 双断言，CI 同款）。测试零依赖、不需导出模板。改测试前必须先说明理由；动 battle/effects/auditor 后另跑结算审计回归（审计重放与运行时同一对纯函数内核，禁自证）。"
+    }
+  },
+  "trace_cmd": [],
+  "trace_env": {},
+  "source_dirs": [
+    "scripts"
+  ],
+  "test_dirs": [
+    "tests"
+  ]
+}

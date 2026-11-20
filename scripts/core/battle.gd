@@ -54,6 +54,9 @@ static func start(deck_player: Array, deck_enemy: Array, seed: int, card_table: 
 
 
 ## 决策入口：拒绝三件全不动（所有检查先于一切突变）；接受序按 brief 逐字。
+# @impl M02.F02.I01
+# @impl M02.F02.I02
+# @impl M02.F02.I03
 static func apply_action(game: Dictionary, action: Dictionary) -> Dictionary:
 	var state: Dictionary = game["state"]
 	var event := action["type"] as String

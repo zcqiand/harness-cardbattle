@@ -24,6 +24,7 @@ extends RefCounted
 ##     需抽而牌库空 ⇒ pending_loser=actor 并停余下抽牌，其余效果继续结算。
 ## 纯函数：不改入参——state 与 ledger 内部 duplicate(true) 后变换，条目 turn =
 ## side_turns["player"] + side_turns["enemy"] - 1，event 一律 "play_card"。
+# @impl M02.F03.I02
 
 const LEDGER_PATH := "res://scripts/core/ledger.gd"
 const MAX_HP := 30

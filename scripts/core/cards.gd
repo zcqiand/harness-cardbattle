@@ -56,6 +56,8 @@ static func _validate_effect(cid: String, i: int, effect: Variant) -> String:
 
 ## JSON.parse_string 把数字解析成 float，字面量传入的是 int——两者都收，
 ## 非整数值（如 1.5）与其它类型一律打回 -1 走拒载分支。
+# @impl M02.F03.I01
+# @impl M04.F01.I01
 static func _as_int(v: Variant) -> int:
 	if v is int:
 		return v

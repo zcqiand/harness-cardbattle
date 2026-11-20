@@ -39,6 +39,15 @@ var _start_button: Button = null
 
 
 ## 建整屏。storage 鸭子接口（scorebook 读成绩册）。
+# @entry M01.F01.I01
+# @entry M01.F01.I02
+# @entry M01.F01.I03
+# @entry M01.F02.I01
+# @entry M01.F02.I02
+# @entry M01.F02.I03
+# @entry M01.F03.I01
+# @impl M04.F01.I02
+# @impl M04.F01.I03
 func setup(storage) -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	_seed = randi()

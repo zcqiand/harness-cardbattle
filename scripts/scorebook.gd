@@ -48,6 +48,7 @@ static func record(storage, entry: Dictionary) -> bool:
 
 
 ## 最近 n 条：追加序尾部 n 条，原序返回（不倒序不重排）；纯函数不改传入 book。
+# @impl M03.F02.I01
 static func recent(book: Array, n: int) -> Array:
 	if n <= 0:
 		return []

@@ -55,6 +55,9 @@ static func load_policy(path: String) -> Dictionary:
 ## hp/shield/手牌张数——对手看不见敌方手牌内容与牌库。attack_available=
 ## 本回合 attack 未用（controller 裁定补充键）。卡表直读单源；查无此卡的
 ## 兜底条目 cost=-1/name=""（正常对局不触达）。
+# @impl M02.F04.I01
+# @impl M02.F04.I02
+# @impl M02.F04.I03
 static func view_for(game: Dictionary, side: String) -> Dictionary:
 	var state: Dictionary = game["state"]
 	var me: Dictionary = (state["heroes"] as Dictionary)[side + "_hero"]

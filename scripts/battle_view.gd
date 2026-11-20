@@ -48,6 +48,9 @@ var _load_error := ""
 
 ## 造局并建屏。config 形状见 menu_view._on_start_pressed。
 ## 卡表/策略加载失败 fail-fast：屏上红字，不出牌不出局。
+# @entry M02.F01.I01
+# @entry M02.F01.I02
+# @entry M02.F01.I03
 func setup(config: Dictionary) -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	_config = config.duplicate(true)

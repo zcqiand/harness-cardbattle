@@ -17,6 +17,7 @@ extends RefCounted
 ##    "field":"hp","target":"enemy_hero","before":30,"after":27,"formula":"damage(3)"}
 ## 除 seq 外各键由调用方给全。链连续性按 (target, field) 分键检查：
 ## 同键相邻条目须满足 entries[i].after == entries[i+1].before。
+# @impl M02.F03.I03
 
 
 static func new_ledger() -> Dictionary:

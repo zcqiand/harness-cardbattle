@@ -3,6 +3,7 @@ extends RefCounted
 ## can_accept 按表判定，未列出的相位/事件一律拒绝，拒绝原因逐字固定。
 
 ## 合法流转表：相位 -> 该相位接受的事件列表
+# @impl M02.F03.I04
 const LEGAL_EVENTS := {
 	"TURN_START": [],
 	"MAIN": ["play_card", "attack", "end_turn"],

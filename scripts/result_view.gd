@@ -20,6 +20,9 @@ var _bundle: Dictionary = {}
 
 ## 跑审计并建屏。bundle 形状见 battle_view._bundle。
 ## storage 鸭子接口（audit ok 时经 scorebook.record 入档）。
+# @entry M03.F01.I01
+# @entry M03.F01.I03
+# @entry M03.F01.I04
 func setup(bundle: Dictionary, storage) -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	_bundle = bundle

@@ -34,6 +34,7 @@ func next_int(bound: int) -> int:
 
 
 ## Fisher-Yates 原地洗牌（从尾向前，j ∈ [0, i]）。
+# @impl M02.F05.I01
 func shuffle(arr: Array) -> void:
 	for i in range(arr.size() - 1, 0, -1):
 		var j := next_int(i + 1)
