@@ -115,9 +115,11 @@ func _build_ui() -> void:
 	_reject_label = _label(Vector2(40.0, 584.0), "", 15, Color(0.95, 0.4, 0.4))
 
 	var ledger_title := _label(Vector2(768.0, 24.0), "账本流 · 最新在上", 18, Color(0.85, 0.88, 0.95))
+	# 高度 320 给下方 action 按钮让位（y 56..376，按钮顶 396）——曾整面盖住
+	# 两钮致点击全被滚动区吞掉（2026-11-20 live 指纹，几何断言钉死）。
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(768.0, 56.0)
-	scroll.size = Vector2(356.0, 576.0)
+	scroll.size = Vector2(356.0, 320.0)
 	add_child(scroll)
 	_ledger_box = VBoxContainer.new()
 	_ledger_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -284,7 +286,11 @@ func _rebuild_hand(st: Dictionary) -> void:
 
 func _update_buttons(st: Dictionary) -> void:
 	var my_turn: bool = st["phase"] == "MAIN" and st["active"] == "player"
-	_attack_button.disabled = not my_turn
+	# attack 预禁用与卡牌按钮同规则（规则面：atk>0 且本回合未用）——曾只看
+	# my_turn，atk=0 时点击只落一行屏底拒因（2026-11-20 live 指纹）。
+	var atk := int((st["heroes"] as Dictionary)["player_hero"]["atk"])
+	var attack_used: bool = (st["attack_used"] as Dictionary)["player"]
+	_attack_button.disabled = not my_turn or atk <= 0 or attack_used
 	_end_turn_button.disabled = not my_turn
 
 
