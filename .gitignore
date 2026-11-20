@@ -6,3 +6,7 @@ build-web/
 .env
 .env.*
 .godot/
+
+# suite 门禁运行产物
+.state/
+tests/*.uid
